@@ -1,0 +1,39 @@
+﻿body {
+}
+
+.LoginLabel {
+    font-weight: bold;
+    font-size: 24pt;
+    font-family: Arial;
+    background-color: transparent;
+}
+
+.DatetimeLabel {
+    font-weight: lighter;
+    font-size: 16pt;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: transparent;
+    float: right;
+}
+
+.TextReviewLabel {
+    font-size: 14pt;
+    font-weight: normal;
+    font-family: monospace;
+    background-color: azure;
+    border-radius: 10px 10px;
+}
+
+.NoOneReviewLabel {
+    font-weight: 100;
+    font-size: 72pt;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: transparent;
+    display: flex;
+    align-content: center;
+    vertical-align: central;
+}
+
+.widthfull {
+    width: 100%;
+}
