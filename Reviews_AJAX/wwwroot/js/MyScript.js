@@ -5,7 +5,8 @@
             type: 'GET',
             contentType: false,
             processData: false,
-            success: function (response) {
+            success: function (response)
+            {
                 let Reviews = JSON.parse(response);
                 let rows = `<table class="widthfull">`;
                 $.each(Reviews, function (index, review) {
@@ -32,8 +33,10 @@
 
                 $("#block-display-reviews").html(rows);
             },
-            error: function (x, y, z) {
+            error: function (x, y, z)
+            {
                 alert(x + '\n' + y + '\n' + z);
+                //alert("Помилка завантаження відгуків!");
             }
         });
     }
