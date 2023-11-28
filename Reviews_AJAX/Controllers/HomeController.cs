@@ -27,13 +27,7 @@ namespace Reviews_AJAX.Controllers
                 var fullname = await repo.TryToLogin(loginVM);
                 if (fullname != null)
                 {
-                    //Response.Cookies.Append("FullName", fullname);
-                    //Response.Cookies.Append("login", loginVM.Login);
-                    //HttpContext.Session.SetString("FullName", fullname);
-                    //HttpContext.Session.SetString("login", loginVM.Login);
-
                     string response = fullname;
-                    //var response = new { Fullname = fullname, Login = loginVM.Login };
                     return Json(response);
                 }
                 else
@@ -43,10 +37,32 @@ namespace Reviews_AJAX.Controllers
             }
             return Problem("Помилка під час відправки даних");
         }
-        //public IActionResult Register()
-        //{
-        //    return View();
-        //}
+        [HttpPost]
+        public async Task<IActionResult> Register(RegisterVM registerVM)
+        {
+            if (ModelState.IsValid)
+            {
+                var isSuccededRegister = await repo.TryToRegister(registerVM);
+
+                return Json(isSuccededRegister);
+            }
+            else { return Json(false); }
+        }
+        [HttpPost]
+        public async Task<IActionResult> TryAddReview(UserReviewVM userReviewVM)
+        {
+            if (userReviewVM.ReviewText != null)
+            {
+                //UserReviewVM userReviewVM = new() { ReviewText = ReviewText, UserLogin = Login, ReviewDate = DateTime.Now };
+                userReviewVM.ReviewDate = DateTime.Now;
+                await repo.CreateReview(userReviewVM);
+                return Json("Відгук успішно відпралено!");
+            }
+            else
+            {
+                return Problem("Відгук не може бути порожнім!");
+            }
+        }
 
         [HttpGet]
         public async Task<IActionResult> GetReviews()

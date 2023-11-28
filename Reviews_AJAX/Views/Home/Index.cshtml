@@ -11,28 +11,25 @@
               $(document).ready(function () {
         function tryAddReview(){
             let formData = new FormData();
-            formData.append("Login", $("#loginform-login").val());
-            formData.append("Password", $("#loginform-password").val());
+            formData.append("UserLogin", $("#Login").val());
+            formData.append("ReviewText", $("#ReviewText").val());
             $.ajax({
-                url: '@Url.Action("Login", "Home")',
+                url: '@Url.Action("TryAddReview", "Home")',
                 type: 'POST',
                 contentType: false,
                 processData: false,
                 data: formData,
                 success: function (response) {
-                    $("#ref-login").css("display", "none");
-                    $("#label-fullname").text(`Вітаємо, ${response}`);
-                    $("#label-nickname").text($("#loginform-login").val());
-                    $("#label-fullname").css("display", "inline");
-
-                    $("#ref-logout").css("display", "inline");
                     prepareIndexPage();
                     getAllReviews();
 
                 }, error: function (x, y, z) {
-                    alert("Неправильний логін або пароль!");
+                   alert(x + '\n' + y + '\n' + z);
                 }
             });
+
+            prepareIndexPage();
+            getAllReviews();
         }
         
         function getAllReviews() {
@@ -47,8 +44,8 @@
                     let rows = `<table class="widthfull">`;
                     $.each(Reviews, function (index, review) {
                         let dat = new Date(review.ReviewDate);
-                        let day = dat.getDay();
-                        let month = dat.getMonth();
+                        let day = dat.getDate();
+                        let month = dat.getMonth() + 1;
                         let year = dat.getFullYear();
                         let hour = dat.getHours();
                         let mins = dat.getMinutes();
@@ -97,9 +94,63 @@
                     getAllReviews();
 
                 }, error: function (x, y, z) {
-                    alert("Неправильний логін або пароль!");
+                   $("#loginform-login-error-span").text("Неправильний логін або пароль!");
+                   $("#loginform-password").val(null);
                 }
             });
+        }
+        function tryToLogout(){
+            $("#label-fullname").text(null);
+            $("#label-nickname").text(null);
+        }
+        function tryToRegister() {
+            if($("#registerform-password").val() != $("#registerform-passwordconfirm").val())
+            {
+                $("#registerform-reg-error-span").text();
+                $("#registerform-password").val(null);
+                $("#registerform-passwordconfirm").val(null);
+            }
+            else{
+                    let formData = new FormData();
+                formData.append("Login", $("#registerform-login").val());
+                formData.append("Password", $("#registerform-password").val());
+                formData.append("FirstName", $("#registerform-firstname").val());
+                formData.append("LastName", $("#registerform-lastname").val());
+                formData.append("PasswordConfirm", $("#registerform-passwordconfirm").val());
+                $.ajax({
+                    url: '@Url.Action("Register", "Home")',
+                    type: 'POST',
+                    contentType: false,
+                    processData: false,
+                    data: formData,
+                    success: function (response) {
+                        if(response == false){
+                            $("#registerform-reg-error-span").text("Такий логін вже зайнятий!");
+                            $("#registerform-password").val(null);
+                            $("#registerform-passwordconfirm").val(null);
+                        }
+                        else{
+
+                            let login = $("#label-nickname").text();
+                            if(login)
+                            {
+                                prepareIndexPage();
+                                getAllReviews();
+                            }
+                            else
+                            {
+                                prepareLoginPage();
+                            }
+                        }
+
+                    }, error: function (response) {
+                        $("#registerform-reg-error-span").text(response);
+                        $("#registerform-password").val(null);
+                        $("#registerform-passwordconfirm").val(null);
+                    }
+                });
+            }
+            
         }
         function prepareIndexPage() {
             let rows = "";
@@ -108,12 +159,12 @@
                 if (login) {
                 rows += `<div id="block-for-add-review">
                     <h1 style="text-align:center">Залиште свій відгук.</h1>
-                    <form asp-action="Index" asp-controller="Home" method="post">
+                    <form asp-action="TryAddReview" asp-controller="Home" method="post">
                         <div style="margin: 5px 10px 5px 10px">
-                            <input type="text" name="Login" value="${login}" readonly>
+                            <input type="text" name="Login" id="Login" value="${login}" readonly>
                             <br>
-                            <textarea style="width:100%;resize:vertical;" name="ReviewText" placeholder="Опишіть свої враження тут..." required></textarea>
-                            <input type="submit" value="Опублікувати">
+                            <textarea style="width:100%;resize:vertical;" name="ReviewText" id="ReviewText" placeholder="Опишіть свої враження тут..." required></textarea>
+                            <input type="button" id="btn-add-review" value="Опублікувати">
                         </div>
                     </form></div>`;
                 
@@ -128,7 +179,7 @@
                         <h3 style="text-align:center">Відгуки користувачів</h3>
                         <div id="block-display-reviews"></div>`;
             $("#pseudobody").html(rows);
-            
+            $("#btn-add-review").on("click",tryAddReview);
         }
 
         function prepareLoginPage() {
@@ -155,27 +206,78 @@
                                 </div>
                                 <div>
                                     <br />
-                                    <form asp-action="Register" method="get">
-                                        <input type="submit" value="Реєстрація" id="loginform-register"/>
+                                    <form>
+                                        <input type="button" value="Реєстрація" id="loginform-register"/>
                                     </form>
                                     <br />
-                                    <form asp-action="EnterAsGuest" method="get">
-                                        <input type="submit" value="Увійти як гість" id="loginform-guest"/>
+                                    <form>
+                                            <input type="button" value="Увійти як гість" id="loginform-guest"/>
                                     </form>
                                 </div>
                             </div>`;
             $("#pseudobody").html(rows);
             $("#loginform-submit").on("click", tryToLogin);
+            $("#loginform-register").on("click", prepareRegPage);
+            $("#loginform-guest").on("click", function(){
+            tryToLogout();
+            prepareIndexPage();
+            getAllReviews();});
         }
 
+        function prepareRegPage() {
+                let rows = `<h1>Реєстрація</h1>
 
+                            <hr />
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <form asp-action="Register" method="post">
+                                        <div asp-validation-summary="ModelOnly" class="text-danger" id="registerform-reg-error-span"></div>
+                                        <div class="form-group">
+                                            <label class="control-label">Ім'я</label>
+                                                <input asp-for="FirstName" class="form-control" id="registerform-firstname" required/>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label">Прізвище</label>
+                                                <input asp-for="LastName" class="form-control" id="registerform-lastname" required/>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label">Логін</label>
+                                            <input asp-for="Login" class="form-control" id="registerform-login" required/>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label">Пароль</label>
+                                                <input type="password" class="form-control" id="registerform-password" required/>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label">Повторіть пароль</label>
+                                                <input type="password" class="form-control" id="registerform-passwordconfirm" required/>
+                                        </div>
+                                        <div class="form-group">
+                                            <input type="button" value="Зареєструватися" class="btn btn-primary" id="registerform-submit"/>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>`;
+            $("#pseudobody").html(rows);
+            $("#registerform-submit").on("click", tryToRegister);
+        }
+
+        ////////////////////////////
         prepareIndexPage();
         getAllReviews();
-
+        ////////////////////////////
         $("#ref-login").on("click", function () {
             prepareLoginPage();
         });
+        $("#ref-register").on("click", function () {
+             prepareRegPage();
+        });
         $("#ref-index").on("click", function () {
+            prepareIndexPage();
+            getAllReviews();
+        });
+        $("#ref-logout").on("click", function () {
+            tryToLogout();
             prepareIndexPage();
             getAllReviews();
         });
