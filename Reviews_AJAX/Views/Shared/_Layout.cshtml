@@ -13,17 +13,18 @@
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
-                <a class="navbar-brand" @*asp-area="" asp-controller="Home" asp-action="Index"*@ id="ref-index">Відгуки</a>
-                <a class="navbar-brand" @*asp-area="" asp-action="Register"*@ id="ref-register">Реєстрація</a>
+                <a class="navbar-brand" id="ref-index">Відгуки</a>
+                <a class="navbar-brand" id="ref-register">Реєстрація</a>
                @* @if (Context.Session.GetString("FullName") == null)
                 {*@
-                        <a class="navbar-brand" @*asp-area="" asp-action="Login"*@ id="ref-login">Увійти</a>
+                        <a class="navbar-brand" id="ref-login">Увійти</a>
                 @*}
                 else
                 {*@
                     
-                        <span class="navbar-brand" id="label-fullname" style="display:none;"></span>
-                        <a class="navbar-brand" @*asp-area="" asp-action="EnterAsGuest"*@ id="ref-logout" style="display:none;">Вийти</a>
+                        <span id="label-fullname" style="display:none;"></span>
+                        <span id="label-nickname" style="display:none;"></span>
+                        <a class="navbar-brand" id="ref-logout" style="display:none;">Вийти</a>
                @* }*@
             </div>
         </nav>

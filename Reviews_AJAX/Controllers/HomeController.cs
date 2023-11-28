@@ -27,9 +27,13 @@ namespace Reviews_AJAX.Controllers
                 var fullname = await repo.TryToLogin(loginVM);
                 if (fullname != null)
                 {
-                    HttpContext.Session.SetString("FullName", fullname);
-                    HttpContext.Session.SetString("login", loginVM.Login);
+                    //Response.Cookies.Append("FullName", fullname);
+                    //Response.Cookies.Append("login", loginVM.Login);
+                    //HttpContext.Session.SetString("FullName", fullname);
+                    //HttpContext.Session.SetString("login", loginVM.Login);
+
                     string response = fullname;
+                    //var response = new { Fullname = fullname, Login = loginVM.Login };
                     return Json(response);
                 }
                 else
